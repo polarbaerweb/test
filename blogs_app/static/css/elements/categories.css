@@ -1,0 +1,38 @@
+.links__container {
+	position: relative;
+	top: 0;
+	right: 0;
+	left: 0;
+}
+
+.categories__container {
+	display: none;
+	opacity: 0;
+}
+
+.categories__container.__active {
+	display: block;
+	transition: all 0.3s;
+	opacity: 1;
+	width: 400px;
+	height: 200px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	position: absolute;
+	top: 50px;
+	left: 0;
+	right: 0;
+	background-color: #c2bdbd;
+}
+.categories__container .list__item {
+	background-color: #000000;
+	padding: 10px 0;
+	margin: 0 0 5px 0;
+}
+.categories__container .list__item .link {
+	height: 100%;
+	display: block;
+}
+.links__container_title {
+	cursor: pointer;
+}

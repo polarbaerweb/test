@@ -1,0 +1,23 @@
+{% extends "bases/head.html" %}
+
+
+{% block title  %}
+	Watchlist
+{% endblock  %}
+
+
+{% block body  %}
+
+	<div class="container">
+		<ul>
+			{% for i in watchlist %}
+				<li class="list__item">
+					<a href="{{ i.get_absolute_url  }}" class="link">
+						{{ i }}
+					</a>
+				</li>
+			{% endfor %}
+		</ul>
+	</div>
+
+{% endblock  %}

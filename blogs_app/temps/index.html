@@ -1,0 +1,47 @@
+{% extends "bases/head.html" %}
+{% load markdown_extras %}
+
+{% block title %}
+	PB News
+{% endblock %}
+
+{% block body %}
+	<div class="container">
+		<ul class="articles__container">
+			{% for article in articles_data %}
+				<li class="article__item">
+					<div class="text__container">
+						<h1 class="article__item_title" title="caption of article">
+							{{ article.title }}
+						</h1>
+						{{ article.summarises|convert_to_html|safe|truncatechars_html:460 }} 
+						<a href="{% url 'detail' article.id %}" class="btn__link">
+							readmore
+						</a>
+						<figure class="article__img_container">
+							<img src="{{ article.image.url }}" class="article__img_outside">
+							<figcaption class="article__img_title">
+								<h5 class="figcaption__title">
+									Image Title
+								</h5>
+								<ul class="img__titles_container">
+									{% for img_title in article.images_title.all %}
+										<li class="img__title">
+											{% if forloop.last %}
+												{{ img_title }}
+											{% else %}
+												{{ img_title }},
+											{% endif %}
+										</li>
+									{% endfor %}
+								</ul>
+							</figcaption>
+						</figure>
+					</div>
+				</li>
+			{% endfor %}
+		</ul>
+	</div>
+
+{% endblock %}
+

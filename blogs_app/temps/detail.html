@@ -1,0 +1,41 @@
+{% extends "bases/head.html" %}
+{% load markdown_extras %}
+
+{% block title %}
+	{{ content.title|capfirst  }}
+{% endblock  %}
+
+
+{% block body %}
+
+	<div class="container">
+		<div class="article__container">
+			<div class="text__container">
+				<h1 class="article__item_title" title="caption of article">
+					{{ content.title }}
+				</h1>
+				{{ content.summarises|convert_to_html|safe}}
+				<figure class="article__img_container">
+					<img src="{{ content.image.url }}" class="article__img_outside" style="width: 900px; height: auto;">
+					<figcaption class="article__img_title">
+						<h5 class="figcaption__title">
+							Image Title
+						</h5>
+						<ul class="img__titles_container">
+							{% for img_title in content.images_title.all %}
+								<li class="img__title">
+									{% if forloop.last %}
+										{{ img_title }}
+									{% else %}
+										{{ img_title }},
+									{% endif %}
+								</li>
+							{% endfor %}
+						</ul>
+					</figcaption>
+				</figure>
+			</div>
+		</div>
+	</div>
+
+{% endblock %}
