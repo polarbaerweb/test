@@ -1,0 +1,23 @@
+{% extends "bases/head.html" %}
+
+{% block title %}
+	LeaveArticles
+{% endblock  %}
+
+
+{% block body  %}
+
+
+	<div class="container">
+		{% if message %}
+			<h1>{{ message }}</h1>
+		{% endif %}
+		<form action="{% url 'leave-article'  %}" method="post"  enctype=multipart/form-data>
+			{% csrf_token %}
+			{{ form.as_p }}
+			<input type="submit" value="add article">
+		</form>
+	</div>
+
+{% endblock  %}
+

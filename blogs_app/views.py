@@ -1,5 +1,4 @@
 from django.shortcuts import get_object_or_404, render
-from django.core.mail import send_mail
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
@@ -8,14 +7,26 @@ from django.urls import reverse
 from django.contrib.auth.hashers import make_password
 
 from . import forms
-from .models import Articles, UserAccount, Categories, WatchListCategories
+from .models import Articles, UserAccount, Categories, WatchListCategories, Comments
 
 
 def get_main_page(request):
     queryset_articles = Articles.objects.all().order_by("created_at")
     queryset_categories = Categories.objects.all()
     template = "index.html"
-    context = {"articles_data": queryset_articles, "categories": queryset_categories}
+    context = {
+        "articles_data": queryset_articles,
+        "categories": queryset_categories,
+    }
+
+    if request.method == "POST":
+        q = request.POST["q"]
+        queryset_articles = Articles.objects.filter(title__contains=q)
+        context["articles_data"] = queryset_articles
+
+        print(context)
+
+        return render(request, template, context)
 
     return render(request, template, context)
 
@@ -30,21 +41,42 @@ def get_article_by_category(request, slug):
     return render(request, template, context)
 
 
+@login_required(login_url="/logIn/")
 def get_detail(request, id: int):
     content = Articles.objects.get(id=id)
     queryset_categories = Categories.objects.all()
+    comments = Comments.objects.filter(article=id)
+    form = forms.AddComment(article=content, user=request.user)
     template = "detail.html"
-    context = {"content": content, "categories": queryset_categories}
+    context = {
+        "content": content,
+        "categories": queryset_categories,
+        "form": form,
+        "comments": comments,
+    }
 
     return render(request, template, context)
 
 
-def get_watchlist_categories(request):
-    watchlist = WatchListCategories.objects.get(user=request.user).category.all()
-    context = {"watchlist": watchlist}
-    tempalte = "watchlist.html"
+def add_comment(request, id: int):
+    if request.method == "POST":
+        article = Articles.objects.get(id=id)
+        user = request.user
 
-    print(watchlist)
+        Comments(article=article, author=user, content=request.POST["content"]).save()
+        return HttpResponseRedirect(reverse("detail", kwargs={"id": id}))
+
+    return HttpResponseRedirect(reverse("detail", kwargs={"id": id}))
+
+
+def get_watchlist_categories(request):
+    try:
+        watchlist = WatchListCategories.objects.get(user=request.user).category.all()
+    except ObjectDoesNotExist:
+        return HttpResponseRedirect(reverse("main"))
+    else:
+        context = {"watchlist": watchlist}
+        tempalte = "watchlist.html"
 
     return render(request, tempalte, context)
 
@@ -61,6 +93,25 @@ def add_to_watchlist(request, id):
         watchlist.category.add(id)
 
     return HttpResponseRedirect(reverse("watchlist"))
+
+
+@login_required(login_url="/logIn/")
+def leave_article(request):
+    template = "leaveArticles.html"
+
+    if request.method == "POST":
+        form = forms.LeaveArticles(request.POST, request.FILES)
+        context = {"form": form, "message": form.errors}
+
+        if form.is_valid():
+            form.save()
+
+        return render(request, template, context)
+
+    form = forms.LeaveArticles()
+    context = {"form": form, "message": form.errors}
+
+    return render(request, template, context)
 
 
 def logIn(request):
@@ -107,5 +158,4 @@ def signUp(request):
 
 def logOut(request):
     logout(request)
-    print(request.user.is_authenticated)
     return HttpResponseRedirect(reverse("log-in"))

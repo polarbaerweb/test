@@ -14,7 +14,7 @@ class UserAccount(AbstractUser):
     username = models.CharField(
         blank=False, null=False, max_length=255, validators=[username_validator]
     )
-    image = models.ImageField(upload_to=f"{MEDIA_ROOT}/authors_image")
+    image = models.ImageField(upload_to=f"{MEDIA_ROOT}/authors_image/")
     email = models.EmailField(("email address"), unique=True, blank=False)
     password = models.CharField(("password"), max_length=255)
     first_name = models.CharField(("first name"), max_length=100)
@@ -54,7 +54,7 @@ class UserAccount(AbstractUser):
 class Articles(models.Model):
     title = models.CharField(max_length=100, unique=True, default="")
     summarises = models.TextField(validators=[MinLengthValidator(170)])
-    image = models.ImageField(f"{MEDIA_ROOT}/images/")
+    image = models.ImageField(upload_to=f"{MEDIA_ROOT}/images/")
     images_title = models.ManyToManyField("ImagesTitle", related_name="articles")
     categories = models.ManyToManyField("Categories", related_name="articles")
     author = models.ManyToManyField(UserAccount, related_name="articles")

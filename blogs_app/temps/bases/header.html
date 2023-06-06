@@ -30,15 +30,16 @@
 
 					</li>
 					<li class='list__item'>
-						<form action="#" method="get">
-							<input type="text" name="search" placeholder="Search" autocomplete="off" class="header__search">
+						<form action="{% url 'search' %}" method="post">
+							{% csrf_token %}
+							<input type="text" name="q" placeholder="Search" autocomplete="off" class="header__search">
 							<input type="submit" value="search">
 						</form>
 					</li>
 					<li class='list__item'>
 						{% if request.user.is_authenticated %}
 							<p class="btn__container">
-								<a href="#" class="link">
+								<a href="{% url 'leave-article' %}" class="link">
 									Leave Articles
 								</a>
 								<a href="{% url 'log-out' %}" class="link">
